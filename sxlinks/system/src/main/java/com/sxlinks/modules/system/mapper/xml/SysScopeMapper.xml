@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sxlinks.modules.system.mapper.SysScopeMapper">
+
+	<!-- 获取访问总数 -->
+<!--	<select id="findAll" resultType="com.sxlinks.modules.system.model.SysScopeSimpleSimple">-->
+<!--        SELECT level,parent_code,scope_code as value,scope_name as label FROM sys_scope where level in ('0','1','2')-->
+<!--    </select>-->
+
+    <!-- 获取访问总数 -->
+    <select id="findAll" resultType="com.sxlinks.modules.system.model.SysScopeSimple">
+        SELECT id,LEVEL,parent_code,scope_code AS VALUE,scope_name AS label FROM sys_scope WHERE LEVEL IN ('0','1','2')
+    </select>
+
+    <select id="getByCode" resultType="com.sxlinks.modules.system.model.SysScopeSimple">
+        SELECT scope_code scopeCode,scope_name scopeName FROM sys_scope
+        where scope_code in
+        <foreach collection="list" index="0" separator="," item="item" open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getSimpleByParent" resultType="com.sxlinks.modules.system.model.SysScopeSimple">
+        SELECT parent_code,scope_code,scope_name FROM sys_scope where parent_code = #{parentCode}
+    </select>
+</mapper>

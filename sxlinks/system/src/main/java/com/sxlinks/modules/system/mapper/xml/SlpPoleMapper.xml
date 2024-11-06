@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sxlinks.modules.system.mapper.pole.SlpPoleMapper">
+
+    <resultMap type="com.sxlinks.modules.system.entity.pole.SlpPole" id="SlpPoleResult">
+        <result property="poleId" column="pole_id"/>
+        <result property="poleName" column="pole_name"/>
+        <result property="poleTypeId" column="pole_type_id"/>
+        <result property="poleProjectId" column="pole_project_id"/>
+        <result property="poleSize" column="pole_size"/>
+        <result property="poleImg" column="pole_img"/>
+        <result property="poleAddress" column="pole_address"/>
+        <result property="poleLng" column="pole_lng"/>
+        <result property="poleLat" column="pole_lat"/>
+        <result property="poleEnable" column="pole_enable"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="projectName" column="project_name"/>
+        <result property="poleTypeName" column="pole_type_name"/>
+    </resultMap>
+
+    <sql id="selectSlpPoleVo">
+        select pole_id,
+               pole_name,
+               pole_type_id,
+               pole_project_id,
+               pole_size,
+               pole_img,
+               pole_address,
+               pole_lng,
+               pole_lat,
+               pole_enable,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               del_flag
+          from slp_pole
+    </sql>
+
+    <select id="selectSlpPoleList" parameterType="com.sxlinks.modules.system.entity.pole.SlpPole" resultMap="SlpPoleResult">
+        select t1.pole_id,
+               t1.pole_name,
+               t1.pole_type_id,
+               t1.pole_project_id,
+               t3.pole_type_name,
+               t2.project_name,
+               t1.pole_size,
+               t1.pole_img,
+               t1.pole_address,
+               t1.pole_lng,
+               t1.pole_lat,
+               t1.pole_enable,
+               t1.create_by,
+               t1.create_time,
+               t1.update_by,
+               t1.update_time,
+               t1.del_flag
+          from slp_pole t1
+          left join slp_project t2
+            on t1.pole_project_id = t2.project_id
+          left join slp_pole_type t3
+            on t1.pole_type_id =t3.pole_type_id
+         where t1.del_flag = '0'
+            <if test="poleName != null  and poleName != ''">
+                and t1.pole_name like concat('%', #{poleName}, '%')
+            </if>
+            <if test="poleTypeId != null ">
+                and t1.pole_type_id = #{poleTypeId}
+            </if>
+            <if test="poleProjectId != null ">
+                and t1.pole_project_id = #{poleProjectId}
+            </if>
+    </select>
+
+    <select id="selectSlpPoleByPoleId" parameterType="Long"
+            resultMap="SlpPoleResult">
+        <include refid="selectSlpPoleVo"/>
+        where pole_id = #{poleId}
+    </select>
+
+    <insert id="insertSlpPole" parameterType="com.sxlinks.modules.system.entity.pole.SlpPole">
+        insert into slp_pole
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="poleId != null">pole_id,
+            </if>
+            <if test="poleName != null">pole_name,
+            </if>
+            <if test="poleTypeId != null">pole_type_id,
+            </if>
+            <if test="poleProjectId != null">pole_project_id,
+            </if>
+            <if test="poleSize != null">pole_size,
+            </if>
+            <if test="poleImg != null">pole_img,
+            </if>
+            <if test="poleAddress != null">pole_address,
+            </if>
+            <if test="poleLng != null">pole_lng,
+            </if>
+            <if test="poleLat != null">pole_lat,
+            </if>
+            <if test="poleEnable != null">pole_enable,
+            </if>
+            <if test="createBy != null">create_by,
+            </if>
+            <if test="updateBy != null">update_by,
+            </if>
+            create_time,
+            update_time,
+            del_flag
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="poleId != null">#{poleId},
+            </if>
+            <if test="poleName != null">#{poleName},
+            </if>
+            <if test="poleTypeId != null">#{poleTypeId},
+            </if>
+            <if test="poleProjectId != null">#{poleProjectId},
+            </if>
+            <if test="poleSize != null">#{poleSize},
+            </if>
+            <if test="poleImg != null">#{poleImg},
+            </if>
+            <if test="poleAddress != null">#{poleAddress},
+            </if>
+            <if test="poleLng != null">#{poleLng},
+            </if>
+            <if test="poleLat != null">#{poleLat},
+            </if>
+            <if test="poleEnable != null">#{poleEnable},
+            </if>
+            <if test="createBy != null">#{createBy},
+            </if>
+            <if test="updateBy != null">#{updateBy},
+            </if>
+            now(),
+            now(),
+            '0'
+        </trim>
+    </insert>
+
+    <update id="updateSlpPole" parameterType="com.sxlinks.modules.system.entity.pole.SlpPole">
+        update slp_pole
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="poleName != null">pole_name =
+                #{poleName},
+            </if>
+            <if test="poleTypeId != null">pole_type_id =
+                #{poleTypeId},
+            </if>
+            <if test="poleProjectId != null">pole_project_id =
+                #{poleProjectId},
+            </if>
+            <if test="poleSize != null">pole_size =
+                #{poleSize},
+            </if>
+            <if test="poleImg != null">pole_img =
+                #{poleImg},
+            </if>
+            <if test="poleAddress != null">pole_address =
+                #{poleAddress},
+            </if>
+            <if test="poleLng != null">pole_lng =
+                #{poleLng},
+            </if>
+            <if test="poleLat != null">pole_lat =
+                #{poleLat},
+            </if>
+            <if test="poleEnable != null">pole_enable =
+                #{poleEnable},
+            </if>
+            <if test="createBy != null">create_by =
+                #{createBy},
+            </if>
+            <if test="createTime != null">create_time =
+                #{createTime},
+            </if>
+            <if test="updateBy != null">update_by =
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">update_time =
+                #{updateTime},
+            </if>
+            <if test="delFlag != null">del_flag =
+                #{delFlag},
+            </if>
+        </trim>
+        where pole_id = #{poleId}
+    </update>
+
+    <delete id="deleteSlpPoleByPoleId" parameterType="Long">
+        delete from slp_pole
+         where pole_id = #{poleId}
+    </delete>
+
+    <delete id="deleteSlpPoleByPoleIds" parameterType="String">
+        delete from slp_pole
+         where pole_id in
+        <foreach item="poleId" collection="array" open="(" separator="," close=")">
+            #{poleId}
+        </foreach>
+    </delete>
+</mapper>

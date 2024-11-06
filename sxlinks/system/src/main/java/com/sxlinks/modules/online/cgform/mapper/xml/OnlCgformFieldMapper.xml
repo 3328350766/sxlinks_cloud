@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sxlinks.modules.online.cgform.mapper.OnlCgformFieldMapper">
+
+	<!-- 执行select list语句 -->
+	<select id="queryListBySql" parameterType="java.lang.String" resultType="java.util.HashMap">
+		${sqlStr}
+	</select>
+
+	<!-- 执行select count语句 -->
+	<select id="queryCountBySql" parameterType="java.lang.String" resultType="java.lang.Integer">
+		${sqlStr}
+	</select>
+
+	<!-- 执行保存语句 -->
+	<insert id="saveFormData" parameterType="java.lang.String">
+		${sqlStr}
+	</insert>
+
+	<!-- 执行编辑语句 -->
+	<update id="editFormData" parameterType="java.lang.String">
+		${sqlStr}
+	</update>
+
+	<!-- 执行select form语句 -->
+	<select id="queryFormData" parameterType="java.lang.String" resultType="java.util.HashMap">
+		${sqlStr}
+	</select>
+
+	<!-- 执行select 查询集合 -->
+	<select id="queryListData" parameterType="java.lang.String" resultType="java.util.HashMap">
+		${sqlStr}
+	</select>
+
+	<!-- 执行delete 删除数据 -->
+	<delete id="deleteAutoList" parameterType="java.lang.String">
+		${sqlStr}
+	</delete>
+
+	<!-- 执行select 分页查询集合 -->
+	<select id="selectPageBySql" parameterType="java.lang.String" resultType="java.util.HashMap">
+		${sqlStr}
+	</select>
+
+	<!-- 执行update语句 据说可以防注入 -->
+	<update id="executeUpdatetSQL" parameterType="java.util.Map">
+		${execute_sql_string}
+	</update>
+
+	<!-- 执行insert语句 据说可以防注入 -->
+	<insert id="executeInsertSQL" parameterType="java.util.Map">
+		${execute_sql_string}
+	</insert>
+
+	<!-- 查询不被权限控制隐藏的列 -->
+	<select id="selectOnlineHideColumns" resultType="java.lang.String">
+		select t.perms from sys_permission t where menu_type = 2 and t.perms like #{online_tbname}
+			and (t.perms_type = '0'
+				or (t.perms_type = '1'
+						and NOT EXISTS(
+						   select * from sys_user a
+							join sys_user_role b on a.id = b.user_id
+							join sys_role c on c.id = b.role_id
+							join sys_role_permission d on d.role_id = c. id
+							where t.id = d.permission_id and a.id = #{user_id}
+						)
+					)
+				)
+	</select>
+
+	<!-- 查询disabled的列 -->
+	<select id="selectOnlineDisabledColumns" resultType="java.lang.String">
+		select t.perms from sys_permission t where menu_type = 2 and t.perms like #{online_tbname}
+			and t.perms_type = '2'
+			and NOT EXISTS(
+			   select * from sys_user a
+				join sys_user_role b on a.id = b.user_id
+				join sys_role c on c.id = b.role_id
+				join sys_role_permission d on d.role_id = c. id
+				where t.id = d.permission_id and a.id = #{user_id}
+			)
+	</select>
+
+	<!-- 查询流程节点权限 隐藏的列 显示无效为隐藏10 禁用有效为禁用21  -->
+	<select id="selectFlowAuthColumns" resultType="java.lang.String">
+		SELECT rule_code FROM ext_act_process_node_auth eapna
+		WHERE eapna.form_type = '1'
+		AND eapna.process_node_code = #{task_id}
+		AND eapna.form_biz_code = #{table_name}
+		<choose>
+			<when test='rule_type == "1"'>
+				AND eapna.status = '0' AND eapna.rule_type = '1'
+			</when>
+			<when test='rule_type == "2"'>
+				AND eapna.status = '1' AND eapna.rule_type = '2'
+			</when>
+			<otherwise>
+				AND 1 = 0
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 查询级联数据  -->
+	<select id="queryDataListByLinkDown" parameterType="Object" resultType="com.sxlinks.modules.online.cgform.model.TreeModel">
+		select
+		${query.key} as store,
+		${query.txt} as label,
+		${query.idField} as id,
+		${query.pidField} as pid
+		from ${query.table} where 1 = 1
+		<choose>
+			<when test="query.pidValue !=null and query.pidValue != ''">
+				AND ${query.pidField} = #{query.pidValue}
+			</when>
+			<otherwise>
+				<if test="query.condition !=null and query.condition != ''">
+					AND ${query.condition}
+				</if>
+			</otherwise>
+		</choose>
+	</select>
+
+</mapper>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sxlinks.modules.online.auth.mapper.OnlAuthPageMapper">
+
+    <resultMap id="AuthPageVO" type="com.sxlinks.modules.online.auth.vo.AuthPageVO">
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="page" property="page" jdbcType="INTEGER"/>
+        <result column="control" property="control" jdbcType="INTEGER"/>
+        <result column="rel_id" property="relId" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 查询某个表单的字段/按钮权限数据 -->
+    <select id="queryRoleAuthByFormId" parameterType="Object" resultMap="AuthPageVO">
+        select a.id,
+               a.code,
+               a.page,
+               a.control,
+               b.db_field_txt as title,
+               c.id as rel_id
+        from onl_auth_page a
+        join onl_cgform_field b on a.code = b.db_field_name and b.cgform_head_id = #{cgformId,jdbcType=VARCHAR}
+        left join onl_auth_relation c
+            on c.auth_id = a.id and c.type = #{type,jdbcType=INTEGER} and c.role_id = #{roleId,jdbcType=VARCHAR}
+        where a.status = 1
+        and a.cgform_id = #{cgformId,jdbcType=VARCHAR}
+        and a.type = #{type,jdbcType=INTEGER}
+	</select>
+
+
+    <!-- 查询某个表单数据权限 -->
+    <select id="queryRoleDataAuth" parameterType="Object" resultMap="AuthPageVO">
+        select a.id,
+               a.rule_name as title,
+               c.id as rel_id
+        from onl_auth_data a
+        left join onl_auth_relation c on c.auth_id = a.id
+        where a.status = 1
+        and a.cgform_id = #{cgformId,jdbcType=VARCHAR}
+        and c.role_id = #{roleId,jdbcType=VARCHAR}
+        and c.type = 3
+	</select>
+
+
+
+    <!-- 查询某个表单的字段权限数据 -->
+    <select id="queryAuthColumnByFormId" parameterType="Object" resultMap="AuthPageVO">
+        select a.id,
+               a.code,
+               a.page,
+               a.control,
+               b.db_field_txt as title
+        from onl_auth_page a
+        join onl_cgform_field b on a.code = b.db_field_name and b.cgform_head_id = #{cgformId,jdbcType=VARCHAR}
+        where a.status = 1 and a.type = 1
+        and a.cgform_id = #{cgformId,jdbcType=VARCHAR}
+	</select>
+
+    <!-- 查询某个表单的按钮权限数据 -->
+    <select id="queryAuthButtonByFormId" parameterType="Object" resultMap="AuthPageVO">
+        select a.id,
+               a.code,
+               a.page,
+               a.control,
+               b.BUTTON_NAME as title
+        from onl_auth_page a
+        left join onl_cgform_button b on a.code = b.BUTTON_CODE and b.CGFORM_HEAD_ID = #{cgformId,jdbcType=VARCHAR}
+        where a.status = 1 and a.type = 2
+        and a.cgform_id = #{cgformId,jdbcType=VARCHAR}
+	</select>
+
+    <!-- 查询 隐藏/禁用 的 列和字段  配置了权限数据 但是没有授权  -->
+    <select id="queryRoleNoAuthCode" parameterType="Object" resultType="java.lang.String">
+        select t.code
+        from onl_auth_page t
+        where t.status = 1
+        <if test="null!=page and ''!=page">
+            and t.page = #{page,jdbcType=INTEGER}
+        </if>
+        <if test="null!=control and ''!=control">
+            and t.control = #{control,jdbcType=INTEGER}
+        </if>
+        <if test="null!=type and ''!=type">
+            and t.type = #{type,jdbcType=INTEGER}
+        </if>
+        and t.cgform_id = #{cgformId,jdbcType=VARCHAR}
+        and NOT EXISTS(
+        select * from onl_auth_relation a
+        join sys_role b on b.id = a.role_id
+        join sys_user_role c on c.role_id = b.id
+        where c.user_id = #{userId,jdbcType=VARCHAR}
+        and a.auth_id = t.id
+        and a.auth_mode = 'role'
+        and a.type in (1,2)
+        )
+        and NOT EXISTS(
+        select * from onl_auth_relation e
+        join sys_depart f on f.id = e.role_id
+        join sys_user_depart g on g.dep_id = f.id
+        where g.user_id = #{userId,jdbcType=VARCHAR}
+        and e.auth_id = t.id
+        and e.auth_mode = 'depart'
+        and e.type in (1,2)
+        )
+    </select>
+
+</mapper>

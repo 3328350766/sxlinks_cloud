@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sxlinks.modules.system.mapper.pole.SlpPoleTypeMapper">
+
+    <resultMap type="com.sxlinks.modules.system.entity.pole.SlpPoleType" id="SlpPoleTypeResult">
+        <result property="poleTypeId" column="pole_type_id"/>
+        <result property="poleTypeName" column="pole_type_name"/>
+        <result property="poleTypeImgUrl" column="pole_type_img_url"/>
+        <result property="remark" column="remark"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectSlpPoleTypeVo">
+        select pole_type_id,
+               pole_type_name,
+               pole_type_img_url,
+               remark,
+               create_time
+          from slp_pole_type
+    </sql>
+
+    <select id="selectSlpPoleTypeList" parameterType="com.sxlinks.modules.system.entity.pole.SlpPoleType" resultMap="SlpPoleTypeResult">
+        <include refid="selectSlpPoleTypeVo"/>
+        <where>
+            <if test="poleTypeName != null  and poleTypeName != ''">
+                and pole_type_name like concat('%', #{poleTypeName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSlpPoleTypeByPoleTypeId" parameterType="Long"
+            resultMap="SlpPoleTypeResult">
+        <include refid="selectSlpPoleTypeVo"/>
+        where pole_type_id = #{poleTypeId}
+    </select>
+
+    <insert id="insertSlpPoleType" parameterType="com.sxlinks.modules.system.entity.pole.SlpPoleType">
+        insert into slp_pole_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="poleTypeId != null">pole_type_id,
+            </if>
+            <if test="poleTypeName != null">pole_type_name,
+            </if>
+            <if test="poleTypeImgUrl != null">pole_type_img_url,
+            </if>
+            <if test="remark != null">remark,
+            </if>
+            create_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="poleTypeId != null">#{poleTypeId},
+            </if>
+            <if test="poleTypeName != null">#{poleTypeName},
+            </if>
+            <if test="poleTypeImgUrl != null">#{poleTypeImgUrl},
+            </if>
+            <if test="remark != null">#{remark},
+            </if>
+            now()
+        </trim>
+    </insert>
+
+    <update id="updateSlpPoleType" parameterType="com.sxlinks.modules.system.entity.pole.SlpPoleType">
+        update slp_pole_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="poleTypeName != null">pole_type_name =
+                #{poleTypeName},
+            </if>
+            <if test="poleTypeImgUrl != null">pole_type_img_url =
+                #{poleTypeImgUrl},
+            </if>
+            <if test="remark != null">remark =
+                #{remark},
+            </if>
+            <if test="createTime != null">create_time =
+                #{createTime},
+            </if>
+        </trim>
+        where pole_type_id = #{poleTypeId}
+    </update>
+
+    <delete id="deleteSlpPoleTypeByPoleTypeId" parameterType="Long">
+        delete
+        from slp_pole_type where pole_type_id = #{poleTypeId}
+    </delete>
+
+    <delete id="deleteSlpPoleTypeByPoleTypeIds" parameterType="String">
+        delete from slp_pole_type where pole_type_id in
+        <foreach item="poleTypeId" collection="array" open="(" separator="," close=")">
+            #{poleTypeId}
+        </foreach>
+    </delete>
+</mapper>

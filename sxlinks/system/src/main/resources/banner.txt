@@ -1,0 +1,14 @@
+${AnsiColor.BRIGHT_BLUE}
+  -------------------------------------------------------------
+          四象物联 - 致力成为国内技术领先的物联网基础服务商
+                【四象物联云平台-Web管理系统】
+                版本：V3.0.0
+                作者：高梁
+                网址：www.sxlinks.com
+  ____________________________________________________________
+
+
+${AnsiColor.BRIGHT_GREEN}
+四象物联云版本: 3.0.0
+Spring Boot Version: ${spring-boot.version}${spring-boot.formatted-version}
+${AnsiColor.BLACK}

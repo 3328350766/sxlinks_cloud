@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sxlinks.modules.online.auth.mapper.OnlAuthDataMapper">
+
+    <resultMap id="SysPermissionDataRuleModel" type="com.sxlinks.common.system.vo.SysPermissionDataRuleModel">
+        <result column="rule_name" property="ruleName" jdbcType="VARCHAR"/>
+        <result column="rule_column" property="ruleColumn" jdbcType="VARCHAR"/>
+        <result column="rule_operator" property="ruleConditions" jdbcType="VARCHAR"/>
+        <result column="rule_value" property="ruleValue" jdbcType="VARCHAR"/>
+        <result column="id" property="id" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 查询某个表单数据权限 -->
+    <select id="queryRoleAuthData" parameterType="Object" resultMap="SysPermissionDataRuleModel">
+        select a.id,
+               a.rule_name,
+               a.rule_column,
+               a.rule_operator,
+               a.rule_value
+        from onl_auth_data a
+        join onl_auth_relation b on b.auth_id = a.id
+        join sys_role c on b.role_id = c.id
+		join sys_user_role d on d.role_id = c.id
+        where a.status = 1
+        and a.cgform_id = #{cgformId,jdbcType=VARCHAR}
+        and b.auth_mode = 'role'
+        and b.type = 3
+        and d.user_id = #{userId,jdbcType=VARCHAR}
+	</select>
+
+    <!-- 查询某个表单数据权限 -->
+    <select id="queryDepartAuthData" parameterType="Object" resultMap="SysPermissionDataRuleModel">
+        select a.id,
+               a.rule_name,
+               a.rule_column,
+               a.rule_operator,
+               a.rule_value
+        from onl_auth_data a
+        join onl_auth_relation b on b.auth_id = a.id
+        join sys_depart c on b.role_id = c.id
+		join sys_user_depart d on d.dep_id = c.id
+        where a.status = 1
+        and a.cgform_id = #{cgformId,jdbcType=VARCHAR}
+        and b.auth_mode = 'depart'
+        and b.type = 3
+        and d.user_id = #{userId,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

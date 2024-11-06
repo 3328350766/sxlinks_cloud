@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: sxlinks-cloud
+  profiles:
+    active: dev
