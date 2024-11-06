@@ -1,13 +1,13 @@
 *.class
 classes
-libs
+#libs
 logs
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
 # Package Files #
-*.jar
+#*.jar
 *.war
 *.ear
 *.class
